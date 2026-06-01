@@ -1,0 +1,32 @@
+name: Pipeline de CI do Aluno
+
+# O pipeline será disparado a cada Push (envio de código)
+on: [push]
+
+jobs:
+  validacao:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Passo 1: Copia o código do repositório para a máquina virtual do GitHub
+    - name: Baixando o código fonte
+      uses: actions/checkout@v3
+
+    # Passo 2: Configura o ambiente Python
+    - name: Configurando o Python na Máquina Virtual
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    # Passo 3: Executa o script que criamos e salva o resultado textual (Log) em um arquivo externo
+    - name: Executando Testes Automatizados e Gerando Relatório
+      run: |
+        echo "=== RELATÓRIO DO PROCESSO DE BUILD ===" > relatorio_build.txt
+        python sistema.py >> relatorio_build.txt
+
+    # Passo 4: Salva o relatório como um artefato permanente para análise posterior
+    - name: Salvando Artefato de Debug (Relatório Final)
+      uses: actions/upload-artifact@v3
+      with:
+        name: relatorio-de-sucesso
+        path: relatorio_build.txt
